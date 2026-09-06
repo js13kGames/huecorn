@@ -4,7 +4,7 @@
 var LEVEL_COMPLETE_DELAY = 1;
 var INDIGO_CRUMBLE_DELAY = 0.3;
 var INDIGO_RESPAWN_DELAY = 1.5;
-var VIOLET_EXPLOSION_TIME = 5;
+var VIOLET_EXPLOSION_TIME = 10;
 var COLOR_INFO = {
   red: { tileId: 2, color: "#ff304f", highlight: "#ffb3bf" },
   orange: { tileId: 4, color: "#e66a19", highlight: "#ffc08a" },
@@ -193,7 +193,7 @@ rows: makeLevelRows(45, 19, [
     [31, 0, "111^^^^^^^^111^^^^^^^^^^^^^^1111"],
   ]),
 },
-{
+{ // 6
 colors: ["red","orange","yellow","green","blue","indigo"],
 platformRange: 4,
 platformSpeed: 70,
@@ -271,56 +271,102 @@ rows: makeLevelRows(47, 39, [
 [38, 0, "1111111^^^^^^^^^^^^^^^^^^^^111"],
 ]),
 },
-    {
-      colors: ["red", "orange", "yellow", "green", "blue", "indigo", "violet"],
-      platformRange: 6,
-      platformSpeed: 115,
-      platformAxis: "y",
-      // The complete-mechanics finale: a vertical orange ride, portal entry,
-      // tall wall climb, crumble bridge, then a five-second wall-jump finish.
-      rows: makeLevelRows(90, 21, [
-        [5, 62, "I"],
-        [5, 79, "D"],
-        [6, 52, ">"],
-        [6, 58, "1    1"],
-        [6, 80, "1    1"],
-        [7, 49, "B"],
-        [7, 58, "1    1iiiiiiiiiiiiiiii1    1"],
-        [8, 47, "1111111"],
-        [8, 58, "1    1"],
-        [8, 80, "1    1"],
-        [9, 41, "Y"],
-        [9, 58, "1    1"],
-        [9, 80, "1    1"],
-        [10, 39, "yyyyyy"],
-        [10, 58, "1    1"],
-        [10, 80, "1    1"],
-        [11, 35, "M"],
-        [11, 58, "1    1"],
-        [11, 80, "1    1"],
-        [12, 58, "1    1"],
-        [12, 80, "1  V 1"],
-        [13, 29, "O"],
-        [13, 58, "1    1"],
-        [13, 80, "1    1"],
-        [14, 27, "rrrrr"],
-        [14, 58, "1    1"],
-        [14, 80, "1111111111"],
-        [15, 21, "rrrrr"],
-        [15, 58, "1    1"],
-        [16, 58, "1    1"],
-        [17, 8, "C"],
-        [17, 14, "rrrrr"],
-        [17, 40, "G"],
-        [17, 58, "1 u  1"],
-        [18, 5, "1111111"],
-        [18, 38, "111111"],
-        [18, 48, "gggg"],
-        [18, 58, "1    1"],
-        [18, 80, "1111111111"],
-        [19, 0, "111111111111111^^^^^^^^^^^^^^^^^^^^^^^111111111111111111111111111111111111111111111111111"],
-      ]),
-    },
+    { // 7
+  colors: ["red","orange","yellow","green","blue","indigo","violet"],
+  platformRange: 3,
+  platformSpeed: 70,
+  platformAxis: "x",
+  rows: makeLevelRows(47, 39, [
+    [0, 11, "11"],
+    [0, 43, "1111"],
+    [1, 11, "11     C"],
+    [1, 45, "11"],
+    [2, 11, "11"],
+    [2, 45, "O1"],
+    [3, 8, "^^ 11"],
+    [3, 46, "1"],
+    [4, 8, "11 11  ^^rrrrrr11"],
+    [4, 46, "1"],
+    [5, 8, "11 11  11^^^^^^11"],
+    [5, 46, "1"],
+    [6, 0, "1111111111 11  1111111111"],
+    [6, 46, "1"],
+    [7, 0, "1"],
+    [7, 8, "11 11  11"],
+    [7, 24, "1^^^^^^^^^^^^^11"],
+    [8, 0, "1"],
+    [8, 8, "11 11  11 G"],
+    [8, 38, "11"],
+    [9, 0, "1"],
+    [9, 8, "11     1111"],
+    [9, 38, "11^^M ^^^"],
+    [10, 0, "1"],
+    [10, 8, "11     11"],
+    [10, 38, "1111  111"],
+    [11, 0, "1    D  11     11   111"],
+    [12, 0, "1"],
+    [12, 8, "111^^1^11"],
+    [13, 0, "1  11111111111111"],
+    [13, 25, "11"],
+    [14, 0, "1"],
+    [14, 14, "111"],
+    [14, 37, "Y"],
+    [15, 0, "1"],
+    [15, 15, "11"],
+    [15, 31, "111yyyyyyy1 111"],
+    [16, 0, "1"],
+    [16, 15, "11^^^^^^^^^^^^^^111"],
+    [16, 41, "1"],
+    [17, 0, "1     111"],
+    [17, 16, "111111111111111111"],
+    [17, 41, "1"],
+    [18, 0, "1g    1111"],
+    [18, 17, "1"],
+    [18, 41, "1"],
+    [19, 0, "1     111111     1"],
+    [19, 41, "1^^^^^"],
+    [20, 0, "1     111111111  1"],
+    [20, 32, "11"],
+    [20, 41, "11 v"],
+    [21, 0, "1     111"],
+    [21, 17, "1    1"],
+    [21, 33, "1"],
+    [21, 41, "11"],
+    [22, 0, "1     111"],
+    [22, 17, "1 v  1 B   11   1"],
+    [22, 41, "11"],
+    [23, 0, "1   gg111  1111111    1"],
+    [23, 33, "1"],
+    [23, 41, "11"],
+    [24, 0, "1     1    1     1    1"],
+    [24, 33, "1"],
+    [24, 41, "1"],
+    [25, 0, "1     1    1     1    11111^^^^^^1"],
+    [25, 41, "1"],
+    [26, 0, "1     1    1     1^^^^^11111111111ggggggg1"],
+    [27, 0, "1     1    1     1111111"],
+    [27, 33, "1^^^^^^^1"],
+    [28, 0, "1     111  1"],
+    [28, 33, "111111111"],
+    [29, 0, "1"],
+    [29, 8, "1  1"],
+    [30, 0, "1gg     1  1"],
+    [31, 0, "1"],
+    [31, 8, "1"],
+    [31, 17, "I"],
+    [32, 0, "1     V 1"],
+    [33, 0, "1    1111iiiiiiiiiii"],
+    [34, 0, "1"],
+    [34, 8, "1"],
+    [35, 0, "1"],
+    [35, 8, "1"],
+    [36, 0, "1"],
+    [36, 8, "1"],
+    [37, 0, "1"],
+    [37, 8, "1"],
+    [38, 0, "1ggggggg1^^^^^^^^^^^^^^^gggg^^^^^^^^^^^^^^ggggg"],
+  ]),
+},
   ],
   currentIndex: 0,
   cols: 0,
@@ -1218,19 +1264,21 @@ rows: makeLevelRows(47, 39, [
     ctx.restore();
   },
 
+  formatRunTime: function () {
+    var totalTenths = Math.floor(Level.runTimer * 10);
+    var minutes = Math.floor(totalTenths / 600);
+    var seconds = ((totalTenths % 600) / 10).toFixed(1);
+    return minutes + ":" + (seconds.length < 4 ? "0" : "") + seconds;
+  },
+
   drawHud: function (ctx, width, height) {
     ctx.save();
     ctx.textAlign = "center";
     ctx.font = "bold 15px monospace";
     ctx.fillStyle = "#f0e9ee";
 
-    var totalSeconds = Math.floor(Level.runTimer * 10) / 10;
-    var minutes = Math.floor(totalSeconds / 60);
-    var seconds = (totalSeconds % 60).toFixed(1);
-    if (seconds.length < 4) seconds = "0" + seconds;
-
     ctx.textAlign = "left";
-    ctx.fillText("TIME " + minutes + ":" + seconds, 16, 26);
+    ctx.fillText("TIME " + Level.formatRunTime(), 16, 26);
     ctx.textAlign = "right";
     ctx.fillText("DEATHS " + Level.deathCount, width - 16, 26);
     ctx.textAlign = "center";

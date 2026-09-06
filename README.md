@@ -2,10 +2,14 @@
 
 ```powershell
 $env:Path = "C:\Users\tyler\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin;$env:Path"
-
 & ".\node_modules\.bin\terser.cmd" keys.js utility.js tile.js song.js sound.js level.js entity.js particles.js hero.js camera.js game.js --compress "passes=3,top_retain=startGame" --mangle "reserved=[startGame]" --toplevel --output build/game.min.js
+& ".\node_modules\.bin\roadroller.cmd" -O2 build/game.min.js -o build/game.js
+```
 
+``` powershell
+$env:Path = "C:\Users\tyler\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin;$env:Path"
 
+& ".\node_modules\.bin\terser.cmd" keys.js utility.js tile.js song.js sound.js level.js entity.js particles.js hero.js camera.js game.js --compress "passes=3,top_retain=startGame" --mangle "reserved=[startGame]" --mangle-props "reserved=[red,orange,yellow,green,blue,indigo,violet]" --toplevel --output build/game.min.js
 & ".\node_modules\.bin\roadroller.cmd" -O2 build/game.min.js -o build/game.js
 ```
 

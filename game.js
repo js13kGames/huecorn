@@ -217,8 +217,13 @@ function drawTitleScreen() {
     275
   );
 
-  ctx.globalAlpha = Level.gameComplete ? 0 : 0.65 + Math.sin(titleTime * 4) * 0.35;
   ctx.font = "800 21px system-ui, sans-serif";
-  ctx.fillText("CLICK TO START", GAME_WIDTH / 2, 348);
+  if (Level.gameComplete) {
+    ctx.fillText("DEATHS " + Level.deathCount, GAME_WIDTH / 2, 322);
+    ctx.fillText("TOTAL TIME " + Level.formatRunTime(), GAME_WIDTH / 2, 358);
+  } else {
+    ctx.globalAlpha = 0.65 + Math.sin(titleTime * 4) * 0.35;
+    ctx.fillText("CLICK TO START", GAME_WIDTH / 2, 348);
+  }
   ctx.globalAlpha = 1;
 }
