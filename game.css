@@ -50,14 +50,14 @@ body.title-screen #mobile-controls {
   .control-button {
     position: absolute;
     box-sizing: border-box;
-    width: 64px;
-    height: 64px;
+    width: 80px;
+    height: 80px;
     padding: 0;
     border: 2px solid rgba(255, 255, 255, 0.65);
     border-radius: 14px;
     background: rgba(20, 24, 32, 0.42);
     color: rgba(255, 255, 255, 0.85);
-    font: bold 24px/1 system-ui, sans-serif;
+    font: bold 30px/1 system-ui, sans-serif;
     touch-action: none;
     pointer-events: auto;
     -webkit-tap-highlight-color: transparent;
@@ -72,8 +72,8 @@ body.title-screen #mobile-controls {
     position: absolute;
     bottom: max(20px, env(safe-area-inset-bottom));
     left: max(20px, env(safe-area-inset-left));
-    width: 138px;
-    height: 64px;
+    width: 170px;
+    height: 80px;
   }
 
   .d-left { left: 0; top: 0; }
@@ -93,8 +93,6 @@ body.title-screen #mobile-controls {
   .d-pad {
     bottom: max(10px, env(safe-area-inset-bottom));
     left: max(12px, env(safe-area-inset-left));
-    transform: scale(0.82);
-    transform-origin: bottom left;
   }
 
   .jump-button {

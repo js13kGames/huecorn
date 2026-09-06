@@ -776,7 +776,7 @@ rows: makeLevelRows(47, 39, [
     }
 
     if (Level.touchesHazard(hero)) {
-      Level.fail(hero);
+      Level.fail(hero, COLOR_INFO.red.color);
       return;
     }
 
@@ -794,6 +794,7 @@ rows: makeLevelRows(47, 39, [
       hero.vx = 0;
       hero.vy = 0;
       Sound.play("complete");
+      Particles.titleBurst(Level.door.x + Level.door.w / 2, Level.door.y + Level.door.h / 2, 2);
       camera.shake(5, 0.25);
     }
   },
@@ -830,6 +831,11 @@ rows: makeLevelRows(47, 39, [
     Sound.play("die");
     camera.shake(rainbowExplosion ? 16 : 8, rainbowExplosion ? 0.6 : 0.35);
 
+    if (color === COLOR_INFO.red.color) {
+      Particles.titleBurst(hero.x + hero.w / 2, hero.y + hero.h / 2, 2, color);
+      return;
+    }
+
     var count = rainbowExplosion ? 48 : 14;
     for (var i = 0; i < count; i++) {
       var angle = Math.random() * Math.PI * 2;
@@ -853,6 +859,8 @@ rows: makeLevelRows(47, 39, [
     camera.x = 0;
     camera.y = 0;
     camera.zoomSpeed = 0;
+    camera.zoom = CAMERA_ZOOM_IN;
+    camera.resize(camera.screenWidth, camera.screenHeight);
   },
 
   draw: function (ctx, camera) {
@@ -1092,16 +1100,36 @@ rows: makeLevelRows(47, 39, [
         var y = row * TILE_SIZE - cameraY;
         var half = TILE_SIZE / 2;
 
-        ctx.fillStyle = "#4b4652";
+        ctx.fillStyle = "#393044";
         ctx.fillRect(x, y + half, TILE_SIZE, half);
-        ctx.fillStyle = "#ded8e0";
-        ctx.beginPath();
-        ctx.moveTo(x, y + half);
-        ctx.lineTo(x + half / 2, y);
-        ctx.lineTo(x + half, y + half);
-        ctx.lineTo(x + half + half / 2, y);
-        ctx.lineTo(x + TILE_SIZE, y + half);
-        ctx.fill();
+        ctx.fillStyle = "#62536f";
+        ctx.fillRect(x, y + half + 2, TILE_SIZE, 3);
+        ctx.fillStyle = "#241e30";
+        ctx.fillRect(x, y + TILE_SIZE - 3, TILE_SIZE, 3);
+
+        // Inset crystal facets keep the outline inside the original silhouette.
+        for (var spike = 0; spike < 2; spike++) {
+          var left = x + spike * half;
+          var tip = left + half / 2;
+          ctx.fillStyle = "#393044";
+          ctx.beginPath();
+          ctx.moveTo(left, y + half);
+          ctx.lineTo(tip, y);
+          ctx.lineTo(left + half, y + half);
+          ctx.fill();
+          ctx.fillStyle = "#f4f0ff";
+          ctx.beginPath();
+          ctx.moveTo(left + 2, y + half - 1);
+          ctx.lineTo(tip, y + 3);
+          ctx.lineTo(tip, y + half - 1);
+          ctx.fill();
+          ctx.fillStyle = "#b5a3c7";
+          ctx.beginPath();
+          ctx.moveTo(tip, y + 3);
+          ctx.lineTo(left + half - 2, y + half - 1);
+          ctx.lineTo(tip, y + half - 1);
+          ctx.fill();
+        }
       }
     }
     ctx.restore();
@@ -1114,19 +1142,14 @@ rows: makeLevelRows(47, 39, [
       var y = Math.round(platform.y) - cameraY;
 
       ctx.save();
-      ctx.fillStyle = Level.orangeUnlocked ? COLOR_INFO.orange.color : "#76614d";
+      ctx.fillStyle = Level.orangeUnlocked ? "#93451f" : "#514638";
       ctx.fillRect(x, y, platform.w, platform.h);
+      ctx.fillStyle = Level.orangeUnlocked ? COLOR_INFO.orange.color : "#76614d";
+      ctx.fillRect(x, y, platform.w, 5);
       ctx.fillStyle = Level.orangeUnlocked ? COLOR_INFO.orange.highlight : "#a68b70";
-      ctx.fillRect(x + 5, y + 4, platform.w - 10, 3);
-      ctx.fillStyle = "#17151f";
-      ctx.beginPath();
-      ctx.moveTo(x + platform.w / 2 - 3, y + 4);
-      ctx.lineTo(x + platform.w / 2 - 10, y + 8);
-      ctx.lineTo(x + platform.w / 2 - 3, y + 12);
-      ctx.moveTo(x + platform.w / 2 + 3, y + 4);
-      ctx.lineTo(x + platform.w / 2 + 10, y + 8);
-      ctx.lineTo(x + platform.w / 2 + 3, y + 12);
-      ctx.fill();
+      ctx.fillRect(x + 2, y, platform.w - 4, 2);
+      ctx.fillStyle = Level.orangeUnlocked ? "#61301f" : "#37302b";
+      ctx.fillRect(x, y + platform.h - 3, platform.w, 3);
       ctx.restore();
     }
   },
@@ -1267,11 +1290,11 @@ rows: makeLevelRows(47, 39, [
       message = "REACH THE DOOR - " + Level.violetTimer.toFixed(1) + "s";
     }
     if (Level.failed) message = Level.failureMessage;
-    if (Level.complete) message = "LEVEL " + (Level.currentIndex + 1) + " COMPLETE";
-    if (Level.gameComplete) message = "ALL LEVELS COMPLETE";
     message = "LEVEL " + (Level.currentIndex + 1) + "  -  " + message;
-    ctx.strokeText(message, width / 2, 26);
-    ctx.fillText(message, width / 2, 26);
+    if (!Level.complete) {
+      ctx.strokeText(message, width / 2, 26);
+      ctx.fillText(message, width / 2, 26);
+    }
 
     if (Level.violetUnlocked && !Level.failed && !Level.complete && !Level.gameComplete) {
       var urgent = Level.violetTimer <= 3;
@@ -1300,13 +1323,6 @@ rows: makeLevelRows(47, 39, [
       ctx.fillStyle = COLOR_INFO[Level.requiredColors[Level.requiredColors.length - 1]].color;
       ctx.fillRect(0, 0, width, height);
       ctx.globalAlpha = 1;
-      ctx.font = "bold 32px monospace";
-      ctx.fillStyle = "#fff";
-      ctx.fillText(
-        Level.gameComplete ? "ALL LEVELS COMPLETE" : "LEVEL " + (Level.currentIndex + 1) + " COMPLETE",
-        width / 2,
-        height / 2
-      );
     }
 
     if (Level.failed) {

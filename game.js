@@ -86,6 +86,7 @@ function update(dt) {
   }
 
   if (Level.failed || Level.complete) {
+    if (Level.complete) camera.follow(hero, dt);
     Level.update(hero, dt);
     Particles.update(dt);
     camera.updateShake(dt);

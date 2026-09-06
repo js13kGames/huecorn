@@ -30,7 +30,9 @@ Camera.prototype.resize = function (screenWidth, screenHeight) {
 };
 
 Camera.prototype.follow = function (target, dt) {
-  var speed = Math.sqrt(target.vx * target.vx + target.vy * target.vy);
+  var centerX = this.x + this.viewWidth / 2;
+  var centerY = this.y + this.viewHeight / 2;
+  var speed = Level.complete ? 0 : Math.sqrt(target.vx * target.vx + target.vy * target.vy);
   // Filter velocity before converting it to zoom. Collisions and input changes
   // can alter the raw speed in one frame; carrying that through directly makes
   // the camera feel twitchy even when the zoom value itself is eased.
@@ -40,7 +42,7 @@ Camera.prototype.follow = function (target, dt) {
   // Smoothstep keeps the close camera steady at low speeds, then opens the
   // view more decisively as the hero approaches full movement speed.
   speedAmount = speedAmount * speedAmount * (3 - 2 * speedAmount);
-  var targetZoom = CAMERA_ZOOM_IN + (CAMERA_ZOOM_OUT - CAMERA_ZOOM_IN) * speedAmount;
+  var targetZoom = Level.complete ? 2.2 : CAMERA_ZOOM_IN + (CAMERA_ZOOM_OUT - CAMERA_ZOOM_IN) * speedAmount;
   var zoomBlend = 1 - Math.exp(-CAMERA_ZOOM_EASE * dt);
   this.zoom += (targetZoom - this.zoom) * zoomBlend;
   this.viewWidth = this.screenWidth / this.zoom;
@@ -51,6 +53,12 @@ Camera.prototype.follow = function (target, dt) {
   var maxX = Math.max(0, Level.widthPx() - this.viewWidth);
   var maxY = Math.max(0, Level.heightPx() - this.viewHeight);
   var blend = 1 - Math.exp(-this.followSpeed * dt);
+
+  if (Level.complete) {
+    this.x = targetX + (centerX - target.x - target.w / 2) * (1 - blend);
+    this.y = targetY + (centerY - target.y - target.h / 2) * (1 - blend);
+    return;
+  }
 
   targetX = clamp(targetX, 0, maxX);
   targetY = clamp(targetY, 0, maxY);
