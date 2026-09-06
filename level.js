@@ -1307,6 +1307,28 @@ rows: makeLevelRows(47, 39, [
     if (Level.gameComplete) message = "ALL LEVELS COMPLETE";
     ctx.fillText("LEVEL " + (Level.currentIndex + 1) + "  -  " + message, width / 2, 26);
 
+    if (Level.violetUnlocked && !Level.failed && !Level.complete && !Level.gameComplete) {
+      var urgent = Level.violetTimer <= 3;
+      var countdownColor = urgent ? "#ff5268" : "#e4b5fa";
+      ctx.save();
+      ctx.fillStyle = "rgba(16, 8, 30, 0.9)";
+      ctx.fillRect(width / 2 - 160, 46, 320, 112);
+      ctx.strokeStyle = countdownColor;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(width / 2 - 160, 46, 320, 112);
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 16px monospace";
+      ctx.fillText("REACH THE DOOR BEFORE IT EXPLODES!", width / 2, 69);
+      ctx.fillStyle = countdownColor;
+      ctx.font = "bold " + (urgent ? 48 + Math.sin(Level.time * 16) * 3 : 48) + "px monospace";
+      ctx.fillText(Level.violetTimer.toFixed(1) + "s", width / 2, 122);
+      ctx.fillStyle = "#493453";
+      ctx.fillRect(width / 2 - 144, 138, 288, 8);
+      ctx.fillStyle = countdownColor;
+      ctx.fillRect(width / 2 - 144, 138, 288 * clamp(Level.violetTimer / VIOLET_EXPLOSION_TIME, 0, 1), 8);
+      ctx.restore();
+    }
+
     if (Level.complete) {
       ctx.globalAlpha = 0.18;
       ctx.fillStyle = COLOR_INFO[Level.requiredColors[Level.requiredColors.length - 1]].color;
