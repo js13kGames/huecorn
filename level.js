@@ -369,32 +369,6 @@ rows: makeLevelRows(47, 39, [
 },
   ],
   currentIndex: 0,
-  cols: 0,
-  rows: 0,
-  map: null,
-  requiredColors: null,
-  redUnlocked: false,
-  orangeUnlocked: false,
-  yellowUnlocked: false,
-  greenUnlocked: false,
-  blueUnlocked: false,
-  indigoUnlocked: false,
-  violetUnlocked: false,
-  violetTimer: 0,
-  crystals: null,
-  movingPlatforms: null,
-  portals: null,
-  indigoTiles: null,
-  indigoTileStates: null,
-  portalCooldown: 0,
-  door: null,
-  complete: false,
-  completeTimer: 0,
-  gameComplete: false,
-  failed: false,
-  failureMessage: "YOU FELL - RESTARTING",
-  restartTimer: 0,
-  time: 0,
   runTimer: 0,
   deathCount: 0,
 
@@ -558,12 +532,6 @@ rows: makeLevelRows(47, 39, [
   baseTileAt: function (col, row) {
     if (row < 0 || row >= Level.rows || col < 0 || col >= Level.cols) return 1;
     return Level.map[row][col];
-  },
-
-  isSolidAtPixel: function (x, y) {
-    var col = Math.floor(x / TILE_SIZE);
-    var row = Math.floor(y / TILE_SIZE);
-    return isSolidTileId(Level.tileAt(col, row));
   },
 
   isColorUnlocked: function (color) {
@@ -885,15 +853,6 @@ rows: makeLevelRows(47, 39, [
     camera.x = 0;
     camera.y = 0;
     camera.zoomSpeed = 0;
-  },
-
-  skipLevel: function (hero, direction) {
-    var nextIndex = clamp(
-      Level.currentIndex + direction,
-      0,
-      Level.levels.length - 1
-    );
-    if (nextIndex !== Level.currentIndex) Level.resetLevel(hero, nextIndex);
   },
 
   draw: function (ctx, camera) {
@@ -1276,10 +1235,15 @@ rows: makeLevelRows(47, 39, [
     ctx.textAlign = "center";
     ctx.font = "bold 15px monospace";
     ctx.fillStyle = "#f0e9ee";
+    ctx.strokeStyle = "#17151f";
+    ctx.lineWidth = 2;
+    ctx.lineJoin = "round";
 
     ctx.textAlign = "left";
+    ctx.strokeText("TIME " + Level.formatRunTime(), 16, 26);
     ctx.fillText("TIME " + Level.formatRunTime(), 16, 26);
     ctx.textAlign = "right";
+    ctx.strokeText("DEATHS " + Level.deathCount, width - 16, 26);
     ctx.fillText("DEATHS " + Level.deathCount, width - 16, 26);
     ctx.textAlign = "center";
 
@@ -1305,7 +1269,9 @@ rows: makeLevelRows(47, 39, [
     if (Level.failed) message = Level.failureMessage;
     if (Level.complete) message = "LEVEL " + (Level.currentIndex + 1) + " COMPLETE";
     if (Level.gameComplete) message = "ALL LEVELS COMPLETE";
-    ctx.fillText("LEVEL " + (Level.currentIndex + 1) + "  -  " + message, width / 2, 26);
+    message = "LEVEL " + (Level.currentIndex + 1) + "  -  " + message;
+    ctx.strokeText(message, width / 2, 26);
+    ctx.fillText(message, width / 2, 26);
 
     if (Level.violetUnlocked && !Level.failed && !Level.complete && !Level.gameComplete) {
       var urgent = Level.violetTimer <= 3;

@@ -20,23 +20,6 @@ var Keys = {
 
     window.addEventListener("keydown", function (e) {
       Keys.down[e.code] = true;
-
-      var skipDirection =
-        e.key === "+" || e.code === "NumpadAdd"
-          ? 1
-          : e.key === "-" || e.code === "NumpadSubtract"
-            ? -1
-            : 0;
-      if (
-        skipDirection !== 0 &&
-        !e.repeat &&
-        !e.altKey &&
-        !e.ctrlKey &&
-        !e.metaKey
-      ) {
-        e.preventDefault();
-        Level.skipLevel(hero, skipDirection);
-      }
     });
     window.addEventListener("keyup", function (e) {
       Keys.down[e.code] = false;

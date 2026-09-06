@@ -21,7 +21,6 @@ function startGame() {
   window.addEventListener("pointerdown", startFromTitle);
   Sound.init();
   Keys.init();
-  // Debug.init();
   Level.init();
 
   hero = new Hero(64, 64);
@@ -164,9 +163,7 @@ function draw() {
   Particles.draw(ctx, camera);
   hero.draw(ctx, camera);
   ctx.restore();
-
   Level.drawHud(ctx, GAME_WIDTH, GAME_HEIGHT);
-  // Debug.draw(ctx, hero);
 }
 
 function drawTitleScreen() {
@@ -184,7 +181,7 @@ function drawTitleScreen() {
   ctx.lineWidth = 2;
   ctx.strokeRect(70, 80, 660, 320);
 
-  var title = "UniCorn";
+  var title = "HueCorn";
   ctx.font = "900 82px system-ui, sans-serif";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";

@@ -35,7 +35,6 @@ function Hero(x, y) {
   this.wallCoyoteRight = 0;
   this.wallJumpLock = 0;
   this.groundCoyote = 0;
-  this.lastJumpType = "none"; // ground / air / wall / bounce - for debugging
   this.jumpSerial = 0; // increments once per jump so other systems can react
   this.moveDirection = 0;
   this.visualScaleX = 1;
@@ -66,7 +65,6 @@ Hero.prototype.reset = function (x, y) {
   this.wallCoyoteRight = 0;
   this.wallJumpLock = 0;
   this.groundCoyote = 0;
-  this.lastJumpType = "none";
   this.visualScaleX = 1;
   this.visualScaleY = 1;
   this.visualTilt = 0;
@@ -139,7 +137,6 @@ Hero.prototype.update = function (dt) {
   if (jumpPressed) {
     if (isGroundedForJump) {
       this.vy = -JUMP_SPEED;
-      this.lastJumpType = "ground";
       this.jumpSerial++;
       this.visualScaleX = squishScale(0.78);
       this.visualScaleY = squishScale(1.24);
@@ -154,7 +151,6 @@ Hero.prototype.update = function (dt) {
       this.wallJumpLock = WALL_JUMP_LOCK_TIME;
       this.wallCoyoteLeft = 0; // consume the wall so you can't re-trigger it next frame
       this.wallCoyoteRight = 0;
-      this.lastJumpType = "wall";
       this.jumpSerial++;
       this.visualScaleX = squishScale(0.76);
       this.visualScaleY = squishScale(1.26);
@@ -163,7 +159,6 @@ Hero.prototype.update = function (dt) {
     } else if (this.airJumpsLeft > 0) {
       this.vy = -JUMP_SPEED;
       this.airJumpsLeft--;
-      this.lastJumpType = "air";
       this.jumpSerial++;
       this.visualScaleX = squishScale(0.72);
       this.visualScaleY = squishScale(1.3);
@@ -221,7 +216,6 @@ Hero.prototype.update = function (dt) {
     this.onGround = false;
     this.groundCoyote = 0;
     this.airJumpsLeft = MAX_AIR_JUMPS;
-    this.lastJumpType = "bounce";
     this.jumpSerial++;
     this.visualScaleX = squishScale(1.5);
     this.visualScaleY = squishScale(0.55);
