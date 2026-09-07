@@ -2,6 +2,7 @@
 var canvas, ctx, camera, hero, lastTime, wallRideShakeTimer;
 var titleScreen = true;
 var titleTime = 0;
+var cloudTime = 0;
 var titleBurstTimer = 0.25;
 var titleCamera = { x: 0, y: 0 };
 var GAME_WIDTH = 800;
@@ -71,6 +72,7 @@ function loop(now) {
 }
 
 function update(dt) {
+  cloudTime += dt;
   if (titleScreen) {
     titleTime += dt;
     titleBurstTimer -= dt;
@@ -138,6 +140,23 @@ function draw() {
 
   ctx.fillStyle = "#7ec0ee";
   ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+  // Faint cloud banks drift independently, with a little distant parallax.
+  ctx.fillStyle = "rgba(244, 240, 255, 0.18)";
+  for (var cloud = 0; cloud < 5; cloud++) {
+    var span = GAME_WIDTH + 240;
+    var cloudX = ((cloud * 227 + cloudTime * (3 + cloud % 3) - camera.x * 0.025) % span + span) % span - 120;
+    var cloudY = 65 + (cloud * 53) % 150 - camera.y * 0.015;
+    ctx.beginPath();
+    for (var puff = 0; puff < 3; puff++) {
+      var puffX = cloudX + (puff - 1) * 30;
+      var puffY = cloudY - (puff === 1 ? 9 : 0);
+      var radius = 34 + (cloud % 2) * 8;
+      ctx.moveTo(puffX + radius, puffY);
+      ctx.ellipse(puffX, puffY, radius, puff === 1 ? 20 : 13, 0, 0, Math.PI * 2);
+    }
+    ctx.fill();
+  }
 
   // Two distant ridgelines drift at different speeds for cheap parallax depth.
   for (var layer = 0; layer < 2; layer++) {
