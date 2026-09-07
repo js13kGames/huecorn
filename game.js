@@ -141,6 +141,28 @@ function draw() {
   ctx.fillStyle = "#7ec0ee";
   ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
+  // Restore the distant rainbow one crystal at a time, red on the outside.
+  ctx.save();
+  ctx.globalAlpha = 0.2;
+  ctx.lineWidth = 9;
+  var rainbowBand = 0;
+  for (var color in COLOR_INFO) {
+    if (Level.isColorUnlocked(color)) {
+      ctx.strokeStyle = COLOR_INFO[color].color;
+      ctx.beginPath();
+      ctx.arc(
+        GAME_WIDTH / 2 - camera.x * 0.02,
+        350 - camera.y * 0.01,
+        265 - rainbowBand * 9,
+        Math.PI,
+        Math.PI * 2
+      );
+      ctx.stroke();
+    }
+    rainbowBand++;
+  }
+  ctx.restore();
+
   // Faint cloud banks drift independently, with a little distant parallax.
   ctx.fillStyle = "rgba(244, 240, 255, 0.18)";
   for (var cloud = 0; cloud < 5; cloud++) {
