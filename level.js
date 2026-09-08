@@ -808,6 +808,9 @@ rows: makeLevelRows(47, 39, [
   collectCrystal: function (crystal) {
     var info = COLOR_INFO[crystal.color];
     Level.unlockColor(crystal.color);
+    if (Level.hasRequiredColors()) {
+      Particles.titleBurst(Level.door.x + Level.door.w / 2, Level.door.y + Level.door.h / 2);
+    }
     Sound.play("crystal");
     if (crystal.color === "violet") Level.violetTimer = VIOLET_EXPLOSION_TIME;
     camera.shake(7, 0.35);
@@ -1216,6 +1219,19 @@ rows: makeLevelRows(47, 39, [
       ctx.beginPath();
       ctx.ellipse(x, y, vertical ? 4 : 11, vertical ? 11 : 4, 0, 0, Math.PI * 2);
       ctx.stroke();
+      if (Level.blueUnlocked) {
+        ctx.fillStyle = COLOR_INFO.blue.highlight;
+        for (var wisp = 0; wisp < 5; wisp++) {
+          var phase = (Level.time * 0.55 + wisp / 5 + i * 0.17) % 1;
+          for (var tail = 0; tail < 3; tail++) {
+            var radius = (1 - phase) * 24 + tail;
+            var angle = phase * Math.PI * 4 + wisp * 2 - tail * 0.15;
+            ctx.globalAlpha = Math.sin(phase * Math.PI) * (0.65 - tail * 0.2);
+            ctx.fillRect(x + Math.cos(angle) * radius * (vertical ? 0.6 : 1) - 1,
+              y + Math.sin(angle) * radius * (vertical ? 1 : 0.6) - 1, 2, 2);
+          }
+        }
+      }
       ctx.restore();
     }
   },
@@ -1256,6 +1272,16 @@ rows: makeLevelRows(47, 39, [
     ctx.lineTo(x - 2, y + 3);
     ctx.closePath();
     ctx.fill();
+    // Staggered glints orbit each crystal without allocating particles.
+    for (var glint = 0; glint < 3; glint++) {
+      var phase = Level.time * 2 + crystal.x * 0.1 + crystal.y * 0.07 + glint * 2.1;
+      var sparkle = Math.pow(Math.max(0, Math.sin(phase * 2)), 4);
+      var sx = x + Math.cos(phase * 0.5 + glint * 2) * 18;
+      var sy = y + Math.sin(phase * 0.5 + glint * 2) * 21;
+      ctx.globalAlpha = sparkle;
+      ctx.fillRect(sx - 3 * sparkle, sy - 0.5, 6 * sparkle, 1);
+      ctx.fillRect(sx - 0.5, sy - 3 * sparkle, 1, 6 * sparkle);
+    }
     ctx.restore();
   },
 
@@ -1268,6 +1294,14 @@ rows: makeLevelRows(47, 39, [
     var exitColor = COLOR_INFO[Level.requiredColors[Level.requiredColors.length - 1]];
 
     ctx.save();
+    if (open) {
+      var glow = ctx.createRadialGradient(x + door.w / 2, y + door.h / 2, 0,
+        x + door.w / 2, y + door.h / 2, door.h);
+      glow.addColorStop(0, "rgba(255,240,210,0.3)");
+      glow.addColorStop(1, "rgba(255,240,210,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(x - door.h, y - door.h / 2, door.w + door.h * 2, door.h * 2);
+    }
     ctx.fillStyle = open ? exitColor.color : "#615965";
     ctx.fillRect(x, y + 8, door.w, door.h - 8);
     ctx.beginPath();
@@ -1277,6 +1311,16 @@ rows: makeLevelRows(47, 39, [
     ctx.fillRect(x + 5, y + 15, door.w - 10, door.h - 15);
     ctx.fillStyle = open ? exitColor.highlight : "#8f8792";
     ctx.fillRect(x + door.w - 7, y + 36, 3, 3);
+    if (open) {
+      for (var spark = 0; spark < 14; spark++) {
+        var rise = (Level.time * 0.4 + spark / 14) % 1;
+        var sparkX = x + door.w / 2 + Math.sin(spark * 2.4 + rise * 3) * (door.w / 2 + 8);
+        var sparkY = y + door.h - rise * (door.h + 14);
+        ctx.globalAlpha = Math.sin(rise * Math.PI);
+        ctx.fillStyle = Particles.rainbow[spark % 7];
+        ctx.fillRect(sparkX - 2, sparkY - 2, 4, 4);
+      }
+    }
     ctx.restore();
   },
 
