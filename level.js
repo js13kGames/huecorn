@@ -926,6 +926,21 @@ rows: makeLevelRows(47, 39, [
             ctx.lineTo(root + 2, y + 2);
           }
           ctx.fill();
+          if (seed < 0.22) {
+            var flowerColor = Level.requiredColors[(col + row) % Level.requiredColors.length];
+            var flowerX = x + 18 + wind * 0.5;
+            ctx.fillStyle = "#367a35";
+            ctx.fillRect(flowerX, y - 9, 1, 11);
+            if (Level.isColorUnlocked(flowerColor)) {
+              ctx.fillStyle = COLOR_INFO[flowerColor].color;
+              ctx.fillRect(flowerX - 3, y - 11, 7, 3);
+              ctx.fillRect(flowerX - 1, y - 13, 3, 7);
+              ctx.fillStyle = "#fff3a3";
+              ctx.fillRect(flowerX, y - 10, 1, 1);
+            } else {
+              ctx.fillRect(flowerX - 1, y - 11, 3, 3);
+            }
+          }
         }
       }
     }
