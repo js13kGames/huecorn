@@ -34,7 +34,7 @@ function makeLevelRows(width, height, placements) {
 
 var Level = {
   levels: [
-    {
+    { // 1
   colors: ["red"],
   rows: makeLevelRows(23, 9, [
     [2, 21, "D"],
@@ -71,33 +71,36 @@ var Level = {
     [15, 0, "11111^^^^^^^^^^^^^^^^^^^^^^^^^^"],
   ]),
 },
-{ // 3
-colors: ["red","orange","yellow"],
-rows: makeLevelRows(31, 16, [
-  [1, 9, "C"],
-  [4, 29, "O"],
-  [5, 0, "1111"],
-  [5, 11, "rr"],
-  [5, 20, "rr     1111"],
-  [6, 0, "1111"],
-  [6, 27, "1111"],
-  [7, 0, "1111^^^^^^^^^^^^^^^^^^1     111"],
-  [8, 0, "11111111111111111111111"],
-  [8, 29, "11"],
-  [9, 0, "11"],
-  [9, 9, "y"],
-  [10, 0, "1"],
-  [10, 9, "y"],
-  [11, 0, "1"],
-  [11, 9, "yY"],
-  [12, 0, "1 D"],
-  [12, 9, "y"],
-  [13, 0, "1"],
-  [13, 9, "y"],
-  [13, 21, "M"],
-  [14, 0, "11111    y  111"],
-  [15, 0, "1111^^^^^^^^^^^^^^^^^^^^^^^^^^^"],
-]),
+{
+  colors: ["red","orange","yellow"],
+  platformRange: 6,
+  platformSpeed: 80,
+  platformAxis: "y",
+  rows: makeLevelRows(31, 16, [
+    [1, 9, "C"],
+    [4, 29, "O"],
+    [5, 0, "1111"],
+    [5, 11, "rr"],
+    [5, 20, "rr     1111"],
+    [6, 0, "1111"],
+    [6, 27, "1111"],
+    [7, 0, "1111^^^^^^^^^^^^^^^^^^1     111"],
+    [8, 0, "11111111111111111111111"],
+    [8, 29, "11"],
+    [9, 0, "11"],
+    [9, 9, "y"],
+    [10, 0, "1"],
+    [10, 9, "y"],
+    [11, 0, "1"],
+    [11, 9, "yY"],
+    [12, 0, "1 D"],
+    [12, 9, "y"],
+    [13, 0, "1"],
+    [13, 9, "y"],
+    [13, 24, "M"],
+    [14, 0, "11111    y  111"],
+    [15, 0, "1111^^^^^^^^^^^^^^^^^^^^^^^^^^^"],
+  ]),
 },
 { // 4
 colors: ["red","orange","yellow","green"],
@@ -757,6 +760,10 @@ rows: makeLevelRows(47, 39, [
           Level.resetLevel(hero, Level.currentIndex + 1);
         } else {
           Level.gameComplete = true;
+          if (!bestRun || Level.runTimer < bestRun[0]) {
+            bestRun = [Level.runTimer, Level.deathCount];
+            try { localStorage.setItem("huecornBest", JSON.stringify(bestRun)); } catch (e) {}
+          }
           titleScreen = true;
           titleBurstTimer = 0;
           document.body.classList.add("title-screen");
@@ -1245,8 +1252,8 @@ rows: makeLevelRows(47, 39, [
     ctx.restore();
   },
 
-  formatRunTime: function () {
-    var totalTenths = Math.floor(Level.runTimer * 10);
+  formatRunTime: function (time) {
+    var totalTenths = Math.floor((time === undefined ? Level.runTimer : time) * 10);
     var minutes = Math.floor(totalTenths / 600);
     var seconds = ((totalTenths % 600) / 10).toFixed(1);
     return minutes + ":" + (seconds.length < 4 ? "0" : "") + seconds;
@@ -1264,9 +1271,17 @@ rows: makeLevelRows(47, 39, [
     ctx.textAlign = "left";
     ctx.strokeText("TIME " + Level.formatRunTime(), 16, 26);
     ctx.fillText("TIME " + Level.formatRunTime(), 16, 26);
+    if (bestRun) {
+      ctx.strokeText("BEST " + Level.formatRunTime(bestRun[0]), 16, 46);
+      ctx.fillText("BEST " + Level.formatRunTime(bestRun[0]), 16, 46);
+    }
     ctx.textAlign = "right";
     ctx.strokeText("DEATHS " + Level.deathCount, width - 16, 26);
     ctx.fillText("DEATHS " + Level.deathCount, width - 16, 26);
+    if (bestRun) {
+      ctx.strokeText("BEST RUN DEATHS " + bestRun[1], width - 16, 46);
+      ctx.fillText("BEST RUN DEATHS " + bestRun[1], width - 16, 46);
+    }
     ctx.textAlign = "center";
 
     var nextColor = null;

@@ -7,6 +7,11 @@ var titleBurstTimer = 0.25;
 var titleCamera = { x: 0, y: 0 };
 var GAME_WIDTH = 800;
 var GAME_HEIGHT = 480;
+var bestRun = null;
+try {
+  var savedRun = JSON.parse(localStorage.getItem("huecornBest"));
+  if (savedRun && savedRun[0] > 0 && savedRun[1] >= 0) bestRun = savedRun;
+} catch (e) {}
 
 function startGame() {
   canvas = document.getElementById("c");
@@ -33,7 +38,11 @@ function startGame() {
 }
 
 function startFromTitle() {
-  if (!titleScreen || Level.gameComplete) return;
+  if (!titleScreen) return;
+  if (Level.gameComplete) {
+    Level.runTimer = Level.deathCount = 0;
+    Level.resetLevel(hero, 0);
+  }
   titleScreen = false;
   Particles.items.length = 0;
   document.body.classList.remove("title-screen");
@@ -258,11 +267,14 @@ function drawTitleScreen() {
 
   ctx.font = "800 21px system-ui, sans-serif";
   if (Level.gameComplete) {
-    ctx.fillText("DEATHS " + Level.deathCount, GAME_WIDTH / 2, 322);
-    ctx.fillText("TOTAL TIME " + Level.formatRunTime(), GAME_WIDTH / 2, 358);
-  } else {
-    ctx.globalAlpha = 0.65 + Math.sin(titleTime * 4) * 0.35;
-    ctx.fillText("CLICK TO START", GAME_WIDTH / 2, 348);
+    ctx.fillText("TIME " + Level.formatRunTime() + "  /  DEATHS " + Level.deathCount, GAME_WIDTH / 2, 310);
   }
+  if (bestRun) {
+    ctx.font = "700 18px system-ui, sans-serif";
+    ctx.fillText("BEST " + Level.formatRunTime(bestRun[0]) + "  /  DEATHS " + bestRun[1], GAME_WIDTH / 2, 340);
+  }
+  ctx.font = "800 21px system-ui, sans-serif";
+  ctx.globalAlpha = 0.65 + Math.sin(titleTime * 4) * 0.35;
+  ctx.fillText(Level.gameComplete ? "CLICK TO PLAY AGAIN" : "CLICK TO START", GAME_WIDTH / 2, 378);
   ctx.globalAlpha = 1;
 }
