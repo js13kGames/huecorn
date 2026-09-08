@@ -914,6 +914,19 @@ rows: makeLevelRows(47, 39, [
         ctx.fillRect(x, y + 5, TILE_SIZE + seamOverlap, 3);
         ctx.fillStyle = "#67bd45";
         ctx.fillRect(x, y, TILE_SIZE + seamOverlap, 5);
+        // Coordinate-based scatter stays fixed while the wind moves the tips.
+        var seed = Math.abs(Math.sin(col * 127.1 + row * 311.7 + Level.currentIndex * 74.7));
+        if (seed < 0.55) {
+          var wind = Math.sin(cloudTime * 2 + col * 0.45 + row * 0.2) * 3;
+          ctx.beginPath();
+          for (var blade = 0; blade < 3; blade++) {
+            var root = x + 7 + seed * 12 + blade * 5;
+            ctx.moveTo(root - 2, y + 2);
+            ctx.quadraticCurveTo(root, y - 4, root + wind + blade - 1, y - 6 - seed * 8 - blade % 2 * 3);
+            ctx.lineTo(root + 2, y + 2);
+          }
+          ctx.fill();
+        }
       }
     }
 
@@ -1279,8 +1292,8 @@ rows: makeLevelRows(47, 39, [
     ctx.strokeText("DEATHS " + Level.deathCount, width - 16, 26);
     ctx.fillText("DEATHS " + Level.deathCount, width - 16, 26);
     if (bestRun) {
-      ctx.strokeText("BEST RUN DEATHS " + bestRun[1], width - 16, 46);
-      ctx.fillText("BEST RUN DEATHS " + bestRun[1], width - 16, 46);
+      ctx.strokeText("BEST: DEATHS " + bestRun[1], width - 16, 46);
+      ctx.fillText("BEST: DEATHS " + bestRun[1], width - 16, 46);
     }
     ctx.textAlign = "center";
 
