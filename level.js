@@ -71,7 +71,7 @@ var Level = {
     [15, 0, "11111^^^^^^^^^^^^^^^^^^^^^^^^^^"],
   ]),
 },
-{
+{ // 3
   colors: ["red","orange","yellow"],
   platformRange: 6,
   platformSpeed: 80,
@@ -207,43 +207,47 @@ rows: makeLevelRows(45, 19, [
     [2, 33, "1 Y"],
     [3, 12, "C"],
     [3, 33, "1111"],
-    [4, 0, "111"],
-    [4, 12, "11    r"],
+    [4, 0, "1111"],
+    [4, 12, "11   rr"],
     [4, 28, "r    111"],
     [5, 0, "1111^^^^^^^^11"],
     [5, 33, "11"],
-    [6, 0, "11v11111111111^^^^^^^^^^^^^^^^^1 1"],
-    [6, 40, "M"],
-    [7, 0, "1"],
+    [6, 0, "11111111111111^^^^^^^^^^^^^^^^^1 1     M"],
+    [7, 0, "1 v"],
     [7, 12, "11111111111111111111 1"],
+    [8, 12, "1"],
     [8, 31, "1 1   M"],
+    [9, 12, "1"],
     [9, 31, "1 1"],
-    [10, 14, "<"],
-    [10, 25, "1     1 1 M"],
+    [10, 12, "1 <"],
+    [10, 31, "1   M"],
+    [11, 12, "1"],
     [11, 25, "1     1O"],
+    [12, 12, "1"],
     [12, 20, "B    1     1"],
-    [13, 18, "1111^  1     1M"],
-    [14, 18, "11111111     1^^^"],
+    [13, 12, "1^^^^^1111^  1     1M"],
+    [14, 12, "11111111111111     1^^^"],
     [14, 42, "^^^^^"],
-    [15, 0, "^gg^"],
     [15, 18, "11111111    ^1111yyyyyyy11111"],
-    [16, 0, "1111"],
     [16, 18, "1"],
     [16, 28, "1111"],
-    [17, 0, "1111"],
+    [17, 0, "^ggg"],
     [17, 18, "1"],
-    [18, 9, "1111     1"],
+    [18, 0, "1111"],
+    [18, 18, "1"],
     [18, 38, "111"],
     [19, 18, "1"],
-    [19, 45, "G"],
     [20, 18, "1"],
-    [20, 45, "11"],
-    [21, 18, "1     ggg"],
+    [20, 45, "G"],
+    [21, 18, "1"],
+    [21, 25, "ggg"],
+    [21, 44, "111"],
     [22, 18, "1"],
-    [23, 3, "1111"],
+    [22, 25, "111"],
+    [23, 4, "1111"],
     [23, 18, "1"],
-    [23, 43, "11"],
     [24, 18, "1"],
+    [24, 42, "111"],
     [25, 18, "1"],
     [26, 18, "1^"],
     [27, 2, "I"],
@@ -251,9 +255,9 @@ rows: makeLevelRows(45, 19, [
     [28, 0, "^111"],
     [28, 18, "11^"],
     [28, 29, "ggg"],
-    [28, 41, "ggg"],
+    [28, 40, "ggg"],
     [29, 0, "1111"],
-    [29, 18, "111^^^^^^^^111^^^^^^^^^111^^^"],
+    [29, 19, "11^^^^^^^^111^^^^^^^^111^^^^"],
     [30, 0, "1111"],
     [30, 20, "111111111111111111111111111"],
     [31, 0, "1111"],
@@ -391,6 +395,7 @@ rows: makeLevelRows(47, 39, [
     Level.violetUnlocked = false;
     Level.violetTimer = 0;
     Level.crystals = [];
+    Level.hoofprints = [];
     Level.movingPlatforms = [];
     Level.portals = [];
     Level.indigoTiles = [];
@@ -872,6 +877,24 @@ rows: makeLevelRows(47, 39, [
     camera.resize(camera.screenWidth, camera.screenHeight);
   },
 
+  paintHooves: function (hero) {
+    var color = "#aaa5ad";
+    for (var name in COLOR_INFO) {
+      if (Level.isColorUnlocked(name)) color = name === "red" ? "#e63946" : COLOR_INFO[name].color;
+    }
+    for (var hoof = 0; hoof < 2; hoof++) {
+      var x = hero.x + 3 + hoof * 12;
+      var y = hero.y + hero.h;
+      var platform = Level.movingPlatforms.find(function (p) {
+        return Math.abs(p.y - y) < 1 && x + 2 >= p.x && x + 2 < p.x + p.w;
+      });
+      if (platform || Level.tileAt(Math.floor((x + 2) / TILE_SIZE), Math.floor((y + 1) / TILE_SIZE))) {
+        Level.hoofprints.push([platform ? x - platform.x : x, platform ? 0 : y, color, platform]);
+        if (Level.hoofprints.length > 80) Level.hoofprints.shift();
+      }
+    }
+  },
+
   draw: function (ctx, camera) {
     var cameraX = Math.round(camera.x);
     var cameraY = Math.round(camera.y);
@@ -1005,6 +1028,13 @@ rows: makeLevelRows(47, 39, [
       seamOverlap
     );
     Level.drawMovingPlatforms(ctx, cameraX, cameraY);
+    for (var print of Level.hoofprints) {
+      var px = print[0] + (print[3] ? print[3].x : 0);
+      var py = print[1] + (print[3] ? print[3].y : 0);
+      if (!print[3] && !Level.tileAt(Math.floor((px + 2) / TILE_SIZE), Math.floor((py + 1) / TILE_SIZE))) continue;
+      ctx.fillStyle = print[2];
+      ctx.fillRect(px - cameraX, py - cameraY, 5, 3);
+    }
     Level.drawPortals(ctx, cameraX, cameraY);
 
     Level.drawCrystals(ctx, cameraX, cameraY);
@@ -1411,15 +1441,6 @@ rows: makeLevelRows(47, 39, [
       ctx.globalAlpha = 1;
     }
 
-    if (Level.failed) {
-      ctx.globalAlpha = 0.35;
-      ctx.fillStyle = "#17151f";
-      ctx.fillRect(0, 0, width, height);
-      ctx.globalAlpha = 1;
-      ctx.font = "bold 32px monospace";
-      ctx.fillStyle = "#fff";
-      ctx.fillText("TRY AGAIN", width / 2, height / 2);
-    }
     ctx.restore();
   },
 };

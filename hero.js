@@ -206,6 +206,7 @@ Hero.prototype.update = function (dt) {
   Level.resolveMovingPlatforms(this, previousBottom);
 
   var teleported = Level.updatePortals(this, dt, this.vx, landingSpeed);
+  if (!teleported && !wasGrounded && this.onGround) Level.paintHooves(this);
   if (
     !teleported &&
     landingSpeed > 0 &&
