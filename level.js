@@ -767,7 +767,9 @@ rows: makeLevelRows(47, 39, [
           Level.gameComplete = true;
           if (!bestRun || Level.runTimer < bestRun[0]) {
             bestRun = [Level.runTimer, Level.deathCount];
-            try { localStorage.setItem("huecornBest", JSON.stringify(bestRun)); } catch (e) {}
+            try {
+              if (!window.levelEditorTest) localStorage.setItem("huecornBest", JSON.stringify(bestRun));
+            } catch (e) {}
           }
           titleScreen = true;
           titleBurstTimer = 0;
@@ -1321,7 +1323,7 @@ rows: makeLevelRows(47, 39, [
     var x = door.x - cameraX;
     var y = door.y - cameraY;
     var open = Level.hasRequiredColors();
-    var exitColor = COLOR_INFO[Level.requiredColors[Level.requiredColors.length - 1]];
+    var exitColor = COLOR_INFO[Level.requiredColors[Level.requiredColors.length - 1] || "violet"];
 
     ctx.save();
     if (open) {
@@ -1400,7 +1402,7 @@ rows: makeLevelRows(47, 39, [
       if (nextColor !== "red") ctx.fillStyle = COLOR_INFO[nextColor].color;
     } else {
       message = "COLOURS RESTORED - REACH THE DOOR";
-      ctx.fillStyle = COLOR_INFO[Level.requiredColors[Level.requiredColors.length - 1]].color;
+      ctx.fillStyle = COLOR_INFO[Level.requiredColors[Level.requiredColors.length - 1] || "violet"].color;
     }
     if (Level.violetUnlocked && !Level.failed) {
       message = "REACH THE DOOR - " + Level.violetTimer.toFixed(1) + "s";
@@ -1436,7 +1438,7 @@ rows: makeLevelRows(47, 39, [
 
     if (Level.complete) {
       ctx.globalAlpha = 0.18;
-      ctx.fillStyle = COLOR_INFO[Level.requiredColors[Level.requiredColors.length - 1]].color;
+      ctx.fillStyle = COLOR_INFO[Level.requiredColors[Level.requiredColors.length - 1] || "violet"].color;
       ctx.fillRect(0, 0, width, height);
       ctx.globalAlpha = 1;
     }

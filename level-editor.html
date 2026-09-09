@@ -180,6 +180,10 @@
 
     dialog::backdrop { background: #050713b8; }
 
+    #test-dialog { width: min(1100px, calc(100vw - 32px)); }
+    .test-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; }
+    #test-frame { display: block; width: 100%; height: min(70vh, 660px); border: 0; background: #111; }
+
     .modal-content { padding: 20px; }
     .modal-content h2 { margin: 0 0 6px; }
     .modal-content p { margin-bottom: 18px; font-size: 13px; line-height: 1.45; }
@@ -258,6 +262,7 @@
             <input id="height" type="number" min="4" max="50" value="12" />
           </label>
           <button id="resize" type="button">Resize grid</button>
+          <button id="test" type="button">Test level</button>
         </div>
         <button id="clear" class="danger" type="button">Clear level</button>
       </div>
@@ -281,6 +286,14 @@
       <div id="status" role="status" aria-live="polite"></div>
     </aside>
   </main>
+
+  <dialog id="test-dialog" aria-label="Test level">
+    <div class="test-toolbar">
+      <p>Arrow keys / WASD to move, Space to jump. Press Esc to edit again.</p>
+      <button id="stop-test" type="button">Back to editor (Esc)</button>
+    </div>
+    <div id="test-container"></div>
+  </dialog>
 
   <dialog id="platform-dialog" aria-labelledby="platform-title">
     <form id="platform-form" class="modal-content">
@@ -615,6 +628,63 @@ ${optionLines}  rows: makeLevelRows(${width}, ${height}, [${placementLines ? "\n
       };
       return { width: newWidth, height: newHeight, placements, options, platform };
     }
+
+    const testDialog = document.querySelector("#test-dialog");
+    const testContainer = document.querySelector("#test-container");
+    let testFrame;
+
+    function stopTest() {
+      testDialog.close();
+    }
+
+    testDialog.addEventListener("close", () => {
+      // Destroy the game context, including its animation loop and audio.
+      testContainer.replaceChildren();
+      testFrame = null;
+      document.querySelector("#test").focus();
+    });
+    document.querySelector("#stop-test").addEventListener("click", stopTest);
+    window.addEventListener("message", event => {
+      if (testFrame && event.source === testFrame.contentWindow && event.data === "exit-level-test") stopTest();
+    });
+    document.querySelector("#test").addEventListener("click", () => {
+      drawing = false;
+      const presentTiles = new Set(cells.flat());
+      const definition = {
+        colors: colors.filter(color => presentTiles.has(color[0])).map(color => color[1]),
+        rows: cells.map(row => row.join("")),
+        platformAxis: platformSettings.axis,
+        platformRange: platformSettings.range,
+        platformSpeed: platformSettings.speed,
+      };
+      const scripts = ["keys", "utility", "tile", "song", "sound", "level", "entity", "particles", "hero", "camera", "game"];
+      testFrame = document.createElement("iframe");
+      testFrame.id = "test-frame";
+      testFrame.title = "Playable level test";
+      // Inherit the editor's origin so file:// pages can load the local game assets.
+      // The preview contains only our scripts and JSON-escaped level data.
+      testFrame.srcdoc = `<!DOCTYPE html><html><head>
+        <script>window.levelEditorTest = true;<\/script>
+        <link rel="stylesheet" href="game.css">
+        ${scripts.map(name => `<script src="${name}.js"><\/script>`).join("")}
+        </head><body><canvas id="c"></canvas>
+        <script>
+          window.addEventListener("keydown", event => {
+            if (event.code === "Escape") {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+              parent.postMessage("exit-level-test", "*");
+            }
+          }, true);
+          Level.levels = [${JSON.stringify(definition).replace(/</g, "\\u003c")}];
+          startGame();
+          startFromTitle();
+          window.focus();
+        <\/script></body></html>`;
+      testDialog.showModal();
+      testContainer.append(testFrame);
+      testFrame.focus();
+    });
 
     function loadCode() {
       try {

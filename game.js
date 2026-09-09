@@ -9,7 +9,7 @@ var GAME_WIDTH = 800;
 var GAME_HEIGHT = 480;
 var bestRun = null;
 try {
-  var savedRun = JSON.parse(localStorage.getItem("huecornBest"));
+  var savedRun = !window.levelEditorTest && JSON.parse(localStorage.getItem("huecornBest"));
   if (savedRun && savedRun[0] > 0 && savedRun[1] >= 0) bestRun = savedRun;
 } catch (e) {}
 
