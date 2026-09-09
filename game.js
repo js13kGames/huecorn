@@ -259,8 +259,8 @@ function drawTitleScreen() {
   ctx.font = "700 24px system-ui, sans-serif";
   ctx.fillText(
     Level.gameComplete
-      ? "You have saved the Rainbow!"
-      : "Collect all the crystals to save the Rainbow!",
+      ? "Rainbow Saved!"
+      : "Collect 7 crystals, save the Rainbow!",
     GAME_WIDTH / 2,
     275
   );
@@ -271,10 +271,12 @@ function drawTitleScreen() {
   }
   if (bestRun) {
     ctx.font = "700 18px system-ui, sans-serif";
+    ctx.fillStyle = COLOR_INFO.indigo.color;
     ctx.fillText("BEST " + Level.formatRunTime(bestRun[0]) + "  /  DEATHS " + bestRun[1], GAME_WIDTH / 2, 340);
   }
+  ctx.fillStyle = "#fff";
   ctx.font = "800 21px system-ui, sans-serif";
   ctx.globalAlpha = 0.65 + Math.sin(titleTime * 4) * 0.35;
-  ctx.fillText(Level.gameComplete ? "CLICK TO PLAY AGAIN" : "CLICK TO START", GAME_WIDTH / 2, 378);
+  ctx.fillText(Level.gameComplete ? "CLICK TO RESTART" : "CLICK TO START", GAME_WIDTH / 2, 378);
   ctx.globalAlpha = 1;
 }
